@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grafico del Payoff delle Opzioni</title>
+    <title>Trading Finanziario e Grafico Payoff Opzioni</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
@@ -20,7 +20,7 @@
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-        h1 {
+        h1, h2, h3 {
             color: #333;
         }
         form {
@@ -57,6 +57,65 @@
     </style>
 </head>
 <body>
+    <!-- Sezione Riassunto Esteso -->
+    <div class="container">
+        <h1>Riassunto Esteso: Introduzione al Trading Finanziario</h1>
+
+        <h2>Gli Attori del Processo di Trading</h2>
+        <p>Il trading finanziario coinvolge tre figure principali:</p>
+        <ul>
+            <li><strong>Market Maker:</strong> Forniscono liquidità inserendo continuamente ordini di acquisto e vendita, garantendo l'esecuzione istantanea delle transazioni. Sono algoritmi che aggiustano i prezzi in base alla domanda e all'offerta.</li>
+            <li><strong>Broker:</strong> Intermediari che facilitano l'acquisto e la vendita di strumenti finanziari per conto degli investitori. Non prendono posizioni proprie ma trasmettono gli ordini dei clienti al mercato.</li>
+            <li><strong>Trader:</strong> Operatori che eseguono operazioni di compravendita basandosi su segnali di trading e strategie con vantaggi probabilistici.</li>
+        </ul>
+
+        <h2>Concetti Fondamentali del Trading</h2>
+        <h3>Segnale di Trading</h3>
+        <p>Un segnale di trading è un insieme di regole e condizioni utilizzate per decidere quando entrare o uscire dal mercato. Si basa su:</p>
+        <ul>
+            <li><strong>Analisi Tecnica:</strong> Utilizzo di medie mobili, livelli di supporto e resistenza, indicatori come RSI o MACD.</li>
+            <li><strong>Analisi Fondamentale:</strong> Analisi di dati economici e notizie di settore.</li>
+            <li><strong>Analisi Quantitativa:</strong> Modelli matematici e statistici per identificare opportunità con vantaggio probabilistico.</li>
+        </ul>
+
+        <h3>Vantaggio Probabilistico</h3>
+        <p>Il trading non offre certezze, ma un trader può avere successo sul lungo periodo adottando strategie con un vantaggio probabilistico:</p>
+        <ul>
+            <li>Eseguire un numero sufficiente di operazioni con una percentuale di successo superiore al 50%.</li>
+            <li>Mantenere un rapporto rischio/rendimento favorevole (es. rischiare 1 per guadagnare 2).</li>
+        </ul>
+
+        <h2>Bid, Ask e Spread</h2>
+        <p>Il market maker genera due prezzi:</p>
+        <ul>
+            <li><strong>Bid:</strong> Prezzo a cui un trader può vendere.</li>
+            <li><strong>Ask:</strong> Prezzo a cui un trader può acquistare.</li>
+            <li><strong>Spread:</strong> Differenza tra Bid e Ask, rappresenta il guadagno del market maker per fornire liquidità.</li>
+        </ul>
+        <p>Lo spread varia in base a:</p>
+        <ul>
+            <li>Liquidità del mercato: maggiore liquidità riduce lo spread.</li>
+            <li>Volatilità del mercato: maggiore volatilità aumenta lo spread.</li>
+            <li>Orario di trading: lo spread è generalmente più basso all'apertura del mercato e aumenta verso la chiusura.</li>
+        </ul>
+
+        <h2>Buy Side e Sell Side</h2>
+        <h3>Buy Side</h3>
+        <p>Include investitori istituzionali e privati che acquistano strumenti finanziari per fini d'investimento. Operano indirettamente attraverso intermediari come broker o banche d'investimento.</p>
+
+        <h3>Sell Side</h3>
+        <p>Comprende intermediari che facilitano l'acquisto e la vendita di strumenti finanziari. Offrono servizi di ricerca e analisi di mercato per supportare le decisioni degli investitori.</p>
+
+        <h2>Importanza dell'Interazione tra gli Attori</h2>
+        <p>L'interazione tra buy side, sell side e market maker è fondamentale per garantire:</p>
+        <ul>
+            <li>Esecuzione rapida degli ordini.</li>
+            <li>Stabilità dei prezzi.</li>
+            <li>Efficienza e trasparenza del mercato.</li>
+        </ul>
+    </div>
+
+    <!-- Sezione Grafico Interattivo -->
     <div class="container">
         <h1>Grafico del Payoff delle Opzioni</h1>
 
