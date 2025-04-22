@@ -54,6 +54,31 @@
             color: green;
             font-weight: bold;
         }
+        .options-list {
+            margin-top: 20px;
+            list-style-type: none;
+            padding: 0;
+        }
+        .options-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .options-list span {
+            margin-right: 10px;
+        }
+        .remove-btn {
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .remove-btn:hover {
+            background-color: darkred;
+        }
     </style>
 </head>
 <body>
@@ -85,6 +110,9 @@
 
         <p class="message" id="message"></p>
 
+        <!-- Lista delle opzioni aggiunte -->
+        <ul class="options-list" id="optionsList"></ul>
+
         <!-- Grafico interattivo -->
         <canvas id="payoffChart"></canvas>
     </div>
@@ -93,13 +121,19 @@
         // Array per memorizzare le opzioni inserite
         let options = [];
 
+        // Carica le opzioni dal localStorage (se presenti)
+        if (localStorage.getItem('options')) {
+            options = JSON.parse(localStorage.getItem('options'));
+            updateChart();
+        }
+
         // Genera un array di prezzi da 50 a 600
         let prices = [];
         for (let i = 50; i <= 600; i++) {
             prices.push(i);
         }
 
-        // Funzione per calcolare il payoff
+        // Funzione per calcolare il payoff di una singola opzione
         function calculatePayoff(option, price) {
             if (option.type === 'Call') {
                 let payoff = Math.max(price - option.strike, 0);
@@ -108,6 +142,19 @@
                 let payoff = Math.max(option.strike - price, 0);
                 return option.position === 'Short' ? option.premium - payoff : payoff - option.premium;
             }
+        }
+
+        // Funzione per calcolare il payoff complesso
+        function calculateAggregatePayoff(prices) {
+            const aggregatePayoff = [];
+            for (let price of prices) {
+                let totalPayoff = 0;
+                for (let option of options) {
+                    totalPayoff += calculatePayoff(option, price);
+                }
+                aggregatePayoff.push(totalPayoff);
+            }
+            return aggregatePayoff;
         }
 
         // Funzione per aggiornare il grafico
@@ -125,6 +172,17 @@
                 };
             });
 
+            // Aggiungi il payoff complesso come un nuovo dataset
+            const aggregatePayoff = calculateAggregatePayoff(prices);
+            datasets.push({
+                label: 'Payoff Complesso',
+                data: aggregatePayoff,
+                borderColor: 'black',
+                borderWidth: 3,
+                pointRadius: 0,
+                fill: false
+            });
+
             // Aggiorna il grafico
             if (window.chart) {
                 window.chart.data.datasets = datasets;
@@ -138,10 +196,41 @@
                         scales: {
                             x: { title: { display: true, text: 'Prezzo dell\'Asset S_T' } },
                             y: { title: { display: true, text: 'Payoff' }, beginAtZero: true }
+                        },
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'bottom'
+                            }
                         }
                     }
                 });
             }
+
+            // Aggiorna la lista delle opzioni
+            updateOptionsList();
+        }
+
+        // Funzione per aggiornare la lista delle opzioni
+        function updateOptionsList() {
+            const optionsList = document.getElementById('optionsList');
+            optionsList.innerHTML = ''; // Pulisce la lista
+
+            options.forEach((opt, index) => {
+                const listItem = document.createElement('li');
+                listItem.innerHTML = `
+                    <span>${opt.position} ${opt.type} (Strike: ${opt.strike}, Premio: ${opt.premium})</span>
+                    <button class="remove-btn" onclick="removeOption(${index})">Rimuovi</button>
+                `;
+                optionsList.appendChild(listItem);
+            });
+        }
+
+        // Funzione per rimuovere un'opzione
+        function removeOption(index) {
+            options.splice(index, 1);
+            localStorage.setItem('options', JSON.stringify(options)); // Aggiorna il localStorage
+            updateChart();
         }
 
         // Aggiungi un listener al form
@@ -154,13 +243,17 @@
             const strike = parseFloat(document.getElementById('strike').value);
             const premium = parseFloat(document.getElementById('premium').value);
 
-            // Assegna un colore casuale all'opzione
-            const colors = ['rgba(255, 99, 132, 1)', 'rgba(75, 192, 192, 1)', 'rgba(153, 102, 255, 1)', 'rgba(255, 159, 64, 1)'];
-            const color = colors[options.length % colors.length];
+            // Validazione dei dati
+            if (!isNaN(strike) && !isNaN(premium) && strike > 0 && premium > 0) {
+                // Assegna un colore casuale all'opzione
+                const colors = ['rgba(255, 99, 132, 1)', 'rgba(75, 192, 192, 1)', 'rgba(153, 102, 255, 1)', 'rgba(255, 159, 64, 1)', 'rgba(54, 162, 235, 1)', 'rgba(127, 191, 63, 1)'];
+                const color = colors[options.length % colors.length];
 
-            // Aggiungi l'opzione all'array
-            if (!isNaN(strike) && !isNaN(premium)) {
+                // Aggiungi l'opzione all'array
                 options.push({ type, position, strike, premium, color });
+
+                // Salva le opzioni nel localStorage
+                localStorage.setItem('options', JSON.stringify(options));
 
                 // Aggiorna il grafico
                 updateChart();
