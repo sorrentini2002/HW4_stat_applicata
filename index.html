@@ -1,16 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grafico del Payoff delle Opzioni</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Diagramma di Payoff Opzioni</title>
+    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
-            text-align: center;
             background-color: #f9f9f9;
+            text-align: center;
         }
         .container {
             max-width: 800px;
@@ -18,255 +16,232 @@
             padding: 20px;
             background: white;
             border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
         h1 {
             color: #333;
+            margin-bottom: 30px;
         }
-        form {
+        .option-form {
             margin-bottom: 20px;
         }
-        label {
-            margin-right: 10px;
-            font-weight: bold;
-        }
-        input, select {
-            padding: 5px;
-            margin-right: 10px;
-            border: 1px solid #ccc;
+        .option-input {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            padding: 10px;
+            background: #f5f5f5;
             border-radius: 4px;
         }
-        button {
-            padding: 5px 10px;
-            background-color: #007bff;
+        .option-input > * {
+            margin-right: 15px;
+        }
+        .option-input select,
+        .option-input input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 100px;
+        }
+        .buttons {
+            margin: 20px 0;
+        }
+        .button {
+            padding: 10px 20px;
+            background: #007bff;
             color: white;
             border: none;
             border-radius: 4px;
             cursor: pointer;
+            margin-right: 10px;
         }
-        button:hover {
-            background-color: #0056b3;
+        .button:hover {
+            background: #0056b3;
         }
-        canvas {
-            margin-top: 20px;
-        }
-        p.message {
+        .message {
+            margin: 15px 0;
             color: green;
             font-weight: bold;
         }
-        .options-list {
-            margin-top: 20px;
-            list-style-type: none;
+        #optionsList {
+            list-style: none;
             padding: 0;
+            margin: 20px 0;
         }
-        .options-list li {
+        #optionsList li {
+            padding: 8px;
+            background: #f5f5f5;
+            border-radius: 4px;
+            margin: 5px 0;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
-        }
-        .options-list span {
-            margin-right: 10px;
+            justify-content: space-between;
         }
         .remove-btn {
-            background-color: red;
+            background: red;
             color: white;
             border: none;
             padding: 5px 10px;
-            border-radius: 4px;
+            border-radius: 3px;
             cursor: pointer;
         }
-        .remove-btn:hover {
-            background-color: darkred;
+        #chartContainer {
+            height: 450px;
+            width: 100%;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Grafico del Payoff delle Opzioni</h1>
+        <h1>Diagramma di Payoff Opzioni</h1>
 
-        <!-- Form per l'inserimento delle opzioni -->
-        <form id="optionForm">
-            <label for="type">Tipo:</label>
-            <select id="type" name="type" required>
-                <option value="Call">Call</option>
-                <option value="Put">Put</option>
-            </select>
+        <div class="option-form">
+            <div class="option-input">
+                <div>
+                    <span>Tipo:</span>
+                    <select class="type">
+                        <option value="call">Call</option>
+                        <option value="put">Put</option>
+                    </select>
+                </div>
+                <div>
+                    <span>Posizione:</span>
+                    <select class="position">
+                        <option value="long">Long</option>
+                        <option value="short">Short</option>
+                    </select>
+                </div>
+                <div>
+                    <span>Strike:</span>
+                    <input type="number" class="strike" value="100" step="0.1">
+                </div>
+                <div>
+                    <span>Premio:</span>
+                    <input type="number" class="premium" value="5" step="0.1">
+                </div>
+            </div>
+        </div>
 
-            <label for="position">Posizione:</label>
-            <select id="position" name="position" required>
-                <option value="Long">Long</option>
-                <option value="Short">Short</option>
-            </select>
+        <div class="buttons">
+            <button class="button" onclick="addOption()">Aggiungi Opzione</button>
+            <button class="button" onclick="updateChart()">Aggiorna Grafico</button>
+        </div>
 
-            <label for="strike">Strike Price:</label>
-            <input type="number" id="strike" name="strike" step="any" required>
+        <p class="message" id="statusMessage"></p>
 
-            <label for="premium">Premio:</label>
-            <input type="number" id="premium" name="premium" step="any" required>
+        <ul id="optionsList"></ul>
 
-            <button type="submit">Aggiungi Opzione</button>
-        </form>
-
-        <p class="message" id="message"></p>
-
-        <!-- Lista delle opzioni aggiunte -->
-        <ul class="options-list" id="optionsList"></ul>
-
-        <!-- Grafico interattivo -->
-        <canvas id="payoffChart"></canvas>
+        <div id="chartContainer"></div>
     </div>
 
     <script>
-        // Array per memorizzare le opzioni inserite
+        let optionCount = 1;
         let options = [];
 
-        // Carica le opzioni dal localStorage (se presenti)
-        if (localStorage.getItem('options')) {
-            options = JSON.parse(localStorage.getItem('options'));
-            updateChart();
+        function addOption() {
+            const newOption = {
+                type: document.querySelector('.option-input .type').value,
+                position: document.querySelector('.option-input .position').value,
+                strike: parseFloat(document.querySelector('.option-input .strike').value),
+                premium: parseFloat(document.querySelector('.option-input .premium').value)
+            };
+            
+            options.push(newOption);
+            
+            // Aggiungi all'elenco
+            const li = document.createElement('li');
+            li.innerHTML = `
+                ${newOption.position} ${newOption.type} (Strike: ${newOption.strike}, Premio: ${newOption.premium})
+                <button class="remove-btn" onclick="removeOption(${options.length-1})">X</button>
+            `;
+            document.getElementById('optionsList').appendChild(li);
+            
+            // Resetta i campi
+            document.querySelector('.option-input .strike').value = 100 + options.length*10;
+            document.querySelector('.option-input .premium').value = 5 + options.length;
+            
+            showStatus('Opzione aggiunta con successo!');
         }
 
-        // Genera un array di prezzi da 50 a 600
-        let prices = [];
-        for (let i = 50; i <= 600; i++) {
-            prices.push(i);
-        }
-
-        // Funzione per calcolare il payoff di una singola opzione
-        function calculatePayoff(option, price) {
-            if (option.type === 'Call') {
-                let payoff = Math.max(price - option.strike, 0);
-                return option.position === 'Short' ? option.premium - payoff : payoff - option.premium;
-            } else {
-                let payoff = Math.max(option.strike - price, 0);
-                return option.position === 'Short' ? option.premium - payoff : payoff - option.premium;
-            }
-        }
-
-        // Funzione per calcolare il payoff complesso
-        function calculateAggregatePayoff(prices) {
-            const aggregatePayoff = [];
-            for (let price of prices) {
-                let totalPayoff = 0;
-                for (let option of options) {
-                    totalPayoff += calculatePayoff(option, price);
-                }
-                aggregatePayoff.push(totalPayoff);
-            }
-            return aggregatePayoff;
-        }
-
-        // Funzione per aggiornare il grafico
-        function updateChart() {
-            // Calcola i payoff per ogni opzione
-            let datasets = options.map(opt => {
-                let payoffs = prices.map(price => calculatePayoff(opt, price));
-                return {
-                    label: `Payoff ${opt.position} ${opt.type} (${opt.strike})`,
-                    data: payoffs,
-                    borderColor: opt.color,
-                    borderWidth: 2,
-                    pointRadius: 0,
-                    fill: false
-                };
-            });
-
-            // Aggiungi il payoff complesso come un nuovo dataset
-            const aggregatePayoff = calculateAggregatePayoff(prices);
-            datasets.push({
-                label: 'Payoff Complesso',
-                data: aggregatePayoff,
-                borderColor: 'black',
-                borderWidth: 3,
-                pointRadius: 0,
-                fill: false
-            });
-
-            // Aggiorna il grafico
-            if (window.chart) {
-                window.chart.data.datasets = datasets;
-                window.chart.update();
-            } else {
-                window.chart = new Chart(document.getElementById('payoffChart').getContext('2d'), {
-                    type: 'line',
-                    data: { labels: prices, datasets },
-                    options: {
-                        responsive: true,
-                        scales: {
-                            x: { title: { display: true, text: 'Prezzo dell\'Asset S_T' } },
-                            y: { title: { display: true, text: 'Payoff' }, beginAtZero: true }
-                        },
-                        plugins: {
-                            legend: {
-                                display: true,
-                                position: 'bottom'
-                            }
-                        }
-                    }
-                });
-            }
-
-            // Aggiorna la lista delle opzioni
-            updateOptionsList();
-        }
-
-        // Funzione per aggiornare la lista delle opzioni
-        function updateOptionsList() {
-            const optionsList = document.getElementById('optionsList');
-            optionsList.innerHTML = ''; // Pulisce la lista
-
-            options.forEach((opt, index) => {
-                const listItem = document.createElement('li');
-                listItem.innerHTML = `
-                    <span>${opt.position} ${opt.type} (Strike: ${opt.strike}, Premio: ${opt.premium})</span>
-                    <button class="remove-btn" onclick="removeOption(${index})">Rimuovi</button>
-                `;
-                optionsList.appendChild(listItem);
-            });
-        }
-
-        // Funzione per rimuovere un'opzione
         function removeOption(index) {
             options.splice(index, 1);
-            localStorage.setItem('options', JSON.stringify(options)); // Aggiorna il localStorage
-            updateChart();
+            document.getElementById('optionsList').removeChild(document.getElementById('optionsList').children[index]);
+            showStatus('Opzione rimossa con successo!');
         }
 
-        // Aggiungi un listener al form
-        document.getElementById('optionForm').addEventListener('submit', function (e) {
-            e.preventDefault();
+        function showStatus(message) {
+            document.getElementById('statusMessage').textContent = message;
+            setTimeout(() => document.getElementById('statusMessage').textContent = '', 2000);
+        }
 
-            // Ottieni i valori inseriti
-            const type = document.getElementById('type').value;
-            const position = document.getElementById('position').value;
-            const strike = parseFloat(document.getElementById('strike').value);
-            const premium = parseFloat(document.getElementById('premium').value);
-
-            // Validazione dei dati
-            if (!isNaN(strike) && !isNaN(premium) && strike > 0 && premium > 0) {
-                // Assegna un colore casuale all'opzione
-                const colors = ['rgba(255, 99, 132, 1)', 'rgba(75, 192, 192, 1)', 'rgba(153, 102, 255, 1)', 'rgba(255, 159, 64, 1)', 'rgba(54, 162, 235, 1)', 'rgba(127, 191, 63, 1)'];
-                const color = colors[options.length % colors.length];
-
-                // Aggiungi l'opzione all'array
-                options.push({ type, position, strike, premium, color });
-
-                // Salva le opzioni nel localStorage
-                localStorage.setItem('options', JSON.stringify(options));
-
-                // Aggiorna il grafico
-                updateChart();
-
-                // Mostra un messaggio di conferma
-                document.getElementById('message').textContent = `Opzione ${position} ${type} aggiunta con successo!`;
+        function calculatePayoff(option, price) {
+            const K = option.strike;
+            const p = option.premium;
+            
+            if(option.type === 'call') {
+                const intrinsic = Math.max(price - K, 0);
+                return option.position === 'long' ? intrinsic - p : -intrinsic + p;
             } else {
-                document.getElementById('message').textContent = 'Inserisci valori validi per Strike Price e Premio.';
+                const intrinsic = Math.max(K - price, 0);
+                return option.position === 'long' ? intrinsic - p : -intrinsic + p;
+            }
+        }
+
+        function updateChart() {
+            const dataPoints = [];
+            const totalPoints = [];
+
+            // Calcolo payoff per ogni opzione
+            options.forEach((option, idx) => {
+                const points = [];
+                for(let price = 0; price <= 200; price++) {
+                    points.push({ x: price, y: calculatePayoff(option, price) });
+                }
+                dataPoints.push({
+                    type: "line",
+                    name: `Opzione ${idx+1}`,
+                    dataPoints: points,
+                    color: getRandomColor()
+                });
+            });
+
+            // Calcolo payoff totale
+            for(let price = 0; price <= 200; price++) {
+                let total = 0;
+                options.forEach(option => total += calculatePayoff(option, price));
+                totalPoints.push({ x: price, y: total });
             }
 
-            // Resetta il form
-            document.getElementById('optionForm').reset();
-        });
+            dataPoints.push({
+                type: "line",
+                name: "Payoff Totale",
+                dataPoints: totalPoints,
+                color: "black",
+                lineThickness: 3
+            });
+
+            // Renderizzazione grafico
+            const chart = new CanvasJS.Chart("chartContainer", {
+                title: { text: "Diagramma di Payoff" },
+                axisX: { title: "Prezzo Sottostante" },
+                axisY: { title: "Payoff" },
+                legend: { verticalAlign: "center", horizontalAlign: "right" },
+                data: dataPoints
+            });
+            chart.render();
+        }
+
+        function getRandomColor() {
+            const letters = '0123456789ABCDEF';
+            let color = '#';
+            for (let i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
     </script>
 </body>
 </html>
