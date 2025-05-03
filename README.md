@@ -35,7 +35,7 @@ Questo progetto è distribuito sotto licenza MIT. Puoi liberamente visualizzare,
 
 ## 🙋‍♂️ Autore
 
-Creato da **Luca Sorrentini**  
+Creato da **Matteo Sorrentini**  
 GitHub: [@sorrentini2002](https://github.com/sorrentini2002)
 
 Il progetto è stato realizzato come parte di un esercizio del corso di **Statistica Applicata**, con l’obiettivo di esplorare concetti di payoff finanziario e visualizzazione interattiva.
