@@ -1,6 +1,3 @@
-# Homework di Statistica Applicata
-Questa repository contiene la soluzione dell'homework per il corso di Statistica Applicata dell'Università La Sapienza di Roma per l'anno accademico 2024 - 2025.
-
 # 💸 Diagramma di Payoff per Opzioni Finanziarie
 
 Questa applicazione web consente di creare e visualizzare **diagrammi di payoff** per strategie basate su opzioni call e put. È possibile aggiungere, rimuovere e combinare diverse opzioni (long/short) e visualizzare sia il payoff individuale che quello complessivo.
@@ -38,5 +35,5 @@ Questo progetto è distribuito sotto licenza MIT. Puoi liberamente visualizzare,
 Creato da **Matteo Sorrentini**  
 GitHub: [@sorrentini2002](https://github.com/sorrentini2002)
 
-Il progetto è stato realizzato come parte di un esercizio del corso di **Statistica Applicata**, con l’obiettivo di esplorare concetti di payoff finanziario e visualizzazione interattiva.
+Il progetto è stato realizzato come parte di un esercizio del corso di **Statistica Applicata**  dell'Università La Sapienza di Roma per l'anno accademico 2024 - 2025, con l’obiettivo di esplorare concetti di payoff finanziario e visualizzazione interattiva.
 
