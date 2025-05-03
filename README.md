@@ -24,9 +24,19 @@ L'obiettivo di questo progetto è aiutare studenti, trader o appassionati di fin
 - **JavaScript** per la logica applicativa
 - **CanvasJS** per la generazione del grafico interattivo
 
-## 🧪 Come usarlo
+## 🔗 Progetto Live
 
-1. Clona la repository:
-   ```bash
-   git clone https://github.com/tuo-username/payoff-opzioni.git
-   cd payoff-opzioni
+Puoi provare l'applicazione direttamente qui:  
+👉 [https://sorrentini2002.github.io/HW4_stat_applicata/](https://sorrentini2002.github.io/HW4_stat_applicata/)
+
+## 📄 Licenza
+
+Questo progetto è distribuito sotto licenza MIT. Puoi liberamente visualizzare, modificare e condividere il codice.
+
+## 🙋‍♂️ Autore
+
+Creato da **Luca Sorrentini**  
+GitHub: [@sorrentini2002](https://github.com/sorrentini2002)
+
+Il progetto è stato realizzato come parte di un esercizio del corso di **Statistica Applicata**, con l’obiettivo di esplorare concetti di payoff finanziario e visualizzazione interattiva.
+
